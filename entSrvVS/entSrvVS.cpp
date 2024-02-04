@@ -37,11 +37,10 @@ void send_int(SOCKET holdConnectionSock, unsigned x) {
 
 void communicate(int threadIdx) {
 
-
     while (true) {
         unsigned x;
         x = recv_int(CONNECTIONS[threadIdx]);
-        printf("%d", x);
+        printf("client %d put %d\n",threadIdx, x);
 
         switch (threadIdx)
             {
