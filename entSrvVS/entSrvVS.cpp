@@ -18,17 +18,17 @@ struct ClientInfo
 };
 
 int recv_int(SOCKET holdConnectionSock) {
-    unsigned x;
-    int bytesRead = recv(holdConnectionSock, (char*)&x, sizeof(unsigned), NULL);
+    int x;
+    int bytesRead = recv(holdConnectionSock, (char*)&x, sizeof(int), NULL);
     if (bytesRead == SOCKET_ERROR) {
         printf("Recv's error\n");
         printf("Error code: %d\n", WSAGetLastError());
     }
-    return (unsigned)x;
+    return (int)x;
 }
 
-void send_int(SOCKET holdConnectionSock, unsigned x) {
-    int bytesRead = send(holdConnectionSock, (const char*)&x, sizeof(unsigned), NULL);
+void send_int(SOCKET holdConnectionSock, int x) {
+    int bytesRead = send(holdConnectionSock, (const char*)&x, sizeof(int), NULL);
     if (bytesRead == SOCKET_ERROR) {
         printf("Send's error\n");
         printf("Error code: %d\n", WSAGetLastError());
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
     // Инициализация и загрузка библиотеки сокетов
     WSADATA wsaData;
     // Версия библиотеки Winsock
-    WORD DLLVersion = MAKEWORD(2,1);
+    WORD DLLVersion = MAKEWORD(2, 1);
     int rc = WSAStartup(DLLVersion, &wsaData);
 
     if (rc != 0) {
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
     sockParams.sin_addr.s_addr = htonl(INADDR_ANY);
     sockParams.sin_family = AF_INET;
     sockParams.sin_port = htons(6780);
-    
+
     // Создание сокета
     SOCKET sockListen;
     sockListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -126,9 +126,9 @@ int main(int argc, char* argv[]) {
 
     // Сокет для удерживания соединения с клиентом
     SOCKET holdConnectionSock;
-    
+
     // Два клиента
-    ClientInfo client1,client2;
+    ClientInfo client1, client2;
     client1.addrStr[0] = 0;
     client2.addrStr[0] = 0;
 
@@ -138,10 +138,10 @@ int main(int argc, char* argv[]) {
     clients[1] = client2;
 
     // Установка подключений для двух клиентов
-    for (int i = 0; i < NUM_OF_CLIENTS; i++) 
+    for (int i = 0; i < NUM_OF_CLIENTS; i++)
     {
         holdConnectionSock = accept(sockListen, (SOCKADDR*)&sockParams, &sockParamsSize);
-        
+
         if (holdConnectionSock == INVALID_SOCKET)
             printf("Error!\n");
         else {
@@ -166,10 +166,31 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    for (int i = 0; i < NUM_OF_CLIENTS; i++) {
-        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)communicate, (LPVOID)i, NULL, NULL);
-    }
+    // Распределение фигур игроков
+    send_int(CONNECTIONS[0], 0);
+    send_int(CONNECTIONS[1], 1);
 
+    while (true) {
+        for (int i = 0; i < NUM_OF_CLIENTS; i++) {
+            int x;
+            int y;
+            x = recv_int(CONNECTIONS[i]);
+            y = recv_int(CONNECTIONS[i]);
+
+            printf("client %d x = %d\n", i, x);
+            printf("client %d y = %d\n", i, y);
+
+            switch (i)
+            {
+            case 0:
+                send_int(CONNECTIONS[1], x);
+                send_int(CONNECTIONS[1], y);
+            case 1:
+                send_int(CONNECTIONS[0], x);
+                send_int(CONNECTIONS[1], y);
+            }
+        }
+    }
 
     getchar();
     return 0;
