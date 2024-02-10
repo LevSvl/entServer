@@ -1,6 +1,3 @@
-#include "MainServer.h"
-
-
 #include<winsock2.h>
 #include<stdio.h>
 #include<stdlib.h>

@@ -6,10 +6,14 @@
 #include<WS2tcpip.h>
 #pragma comment(lib,"ws2_32.lib")
 
+#include "cfgParser.h"
+
+
 #define MAX_POOL_SIZE 10
-#define NUM_OF_CLIENTS 2
+#define NUM_OF_CLIENTS 1
 
 SOCKET CONNECTIONS[NUM_OF_CLIENTS];
+CfgParser cfgParser;
 
 struct ClientInfo
 {
@@ -51,42 +55,13 @@ void communicate(int threadIdx) {
             }
 
         send_int(CONNECTIONS[threadIdx], x);
-
-
-        //char recvData[32];
-        //int anotherThreadIdx;
-
-
-        //int bytesRead = recv(CONNECTIONS[threadIdx], recvData, sizeof(recvData), NULL);
-
-        //if (bytesRead == SOCKET_ERROR) {
-        //    printf("Recv's error\n");
-        //    printf("Error code: %d\n", WSAGetLastError());
-        //}
-
-        //printf("%s", recvData);
-
-
-        //printf("%d", bytes_to_int(recvData));
-        //switch (threadIdx)
-        //{
-        //case 0:
-        //    threadIdx++;
-        //case 1:
-        //    threadIdx--;
-        //}
-
-        //int bytesWrite = send(CONNECTIONS[threadIdx], recvData, sizeof(recvData), NULL);
-
-        //if (bytesWrite == SOCKET_ERROR) {
-        //    printf("Send's error\n");
-        //    printf("Error code: %d\n", WSAGetLastError());
-        //}
     }
 }
 
 
 int main(int argc, char* argv[]) {
+    // инициализация случайных значений
+    srand(time(NULL));
     // Инициализация и загрузка библиотеки сокетов
     WSADATA wsaData;
     // Версия библиотеки Winsock
@@ -147,16 +122,6 @@ int main(int argc, char* argv[]) {
         else {
             printf("Success!\n");
             CONNECTIONS[i] = holdConnectionSock;
-
-            /*
-            Когда соединение установлено, сервер проверяет,
-            Совпадают ли параметры игры. Сервер получает:
-            - Размеры экрана,
-            - Радиус круга,
-            - Скорость круга,
-            - Цвет круга,
-            - Позицию круга
-            */
         }
 
         if (clients[i].addrStr[0] == 0) {
@@ -166,9 +131,28 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Распределение фигур игроков
+    // Распределение идентификаторов игроков
     send_int(CONNECTIONS[0], 0);
     send_int(CONNECTIONS[1], 1);
+
+    
+    int screen_width = cfgParser.parseCfg("screen_width");
+    int screen_height = cfgParser.parseCfg("screen_height");
+
+    // Отправка координат прямоугольника игрокам
+    for (int i = 0; i < NUM_OF_CLIENTS; i++) {
+        send_int(CONNECTIONS[i], i + (screen_width / 3)); // (1/3,2/3) 
+        send_int(CONNECTIONS[i], screen_width / 2);
+    }
+    // Отправка координат кружков игрокам
+    for (int i = 0; i < NUM_OF_CLIENTS; i++) {
+        send_int(CONNECTIONS[i], rand() % 50);
+        send_int(CONNECTIONS[i], 400 ); // y всегда 400
+    }
+
+    // Отправка полного списка игроков всем игрокам
+
+
 
     while (true) {
         for (int i = 0; i < NUM_OF_CLIENTS; i++) {
