@@ -21,10 +21,16 @@
     <ClCompile Include="MainServer.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="cfgParser.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MainServer.h">
+    <ClInclude Include="cfgParser.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="entSrvVs.conf" />
   </ItemGroup>
 </Project>
