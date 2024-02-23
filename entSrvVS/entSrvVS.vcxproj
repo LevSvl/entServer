@@ -147,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cfgParser.h" />
+    <ClInclude Include="entSrvVS.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="entSrvVs.conf" />

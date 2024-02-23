@@ -29,6 +29,9 @@
     <ClInclude Include="cfgParser.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="entSrvVS.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="entSrvVs.conf" />
