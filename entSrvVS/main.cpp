@@ -23,14 +23,13 @@ int main(int argc, char* argv[]) {
 
     // Сокет для удерживания соединения с клиентом
     SOCKET holdConnectionSock;
+
+
     // Два клиента
-    ClientInfo client1, client2;
-    client1.addrStr[0] = 0;
-    client2.addrStr[0] = 0;
-    // Массив клиентов, для избежания while ??
-    ClientInfo clients[2];
-    clients[0] = client1;
-    clients[1] = client2;
+    vector<ClientInfo> clients(EntServer.NUM_OF_CLIENTS);
+    for (int i = 0; i < EntServer.NUM_OF_CLIENTS; i++) {
+        clients[i].addrStr[0] = 0;
+    }
 
     // Установка подключений для двух клиентов
     for (int i = 0; i < EntServer.NUM_OF_CLIENTS; i++)
@@ -72,10 +71,33 @@ int main(int argc, char* argv[]) {
         EntServer.send_int(CONNECTIONS[i], 400); // y всегда 400
     }
 
+    // Получение полного списка игроков
+    vector<void*> allClassesOFPlayers; // сюда запишется сериализованный экземпляр класса
+    vector<int> bytesReadVec; // сюда запишется количество байт, отведенное под экземпляр
+    for (int i = 0; i < EntServer.NUM_OF_CLIENTS; i++) {
+        char* classOfPlayer[1024]; // пусть буфер будет готов принять до 1 КБ
+        int messageLength = EntServer.recvMessage(CONNECTIONS[i], (char*)&classOfPlayer);
+        // messageLength - количество записанных байт в буфер classOfPlayer
+        allClassesOFPlayers.push_back(classOfPlayer);
+        bytesReadVec.push_back(messageLength);
+    }
     // Отправка полного списка игроков всем игрокам
+    for (int i = 0; i < EntServer.NUM_OF_CLIENTS; i++) {
+        EntServer.sendRecievedData(CONNECTIONS[i], (char*)allClassesOFPlayers[i], bytesReadVec[i]);
+    }
 
 
 
+
+    // тестовый конец 
+    return 0;
+    // тестовый конец 
+
+
+
+
+
+    // Передача информации в ходе игры
     while (true) {
         for (int i = 0; i < EntServer.NUM_OF_CLIENTS; i++) {
             int x;

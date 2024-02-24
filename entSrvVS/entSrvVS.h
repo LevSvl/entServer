@@ -35,5 +35,6 @@ public:
 	void PrependMessageLength(std::string& message);
 	int recvMessage(SOCKET connectionWithClient, char* buffer);
 	int sendMessage(SOCKET connectionWithClient, const std::string& message);
+	int sendRecievedData(SOCKET connectionWithClient, char* message, int messageLength);
 
 };

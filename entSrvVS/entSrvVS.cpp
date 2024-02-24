@@ -124,7 +124,7 @@ int EntSrvVS::recvMessage(SOCKET connectionWithClient, char* buffer)
     {
         void();
     }
-    std::cout << ((int)buffer[0] | (int)buffer[1] | (int)buffer[2] | (int)buffer[3]) << std::endl;
+    //std::cout << ((int)buffer[0] | (int)buffer[1] | (int)buffer[2] | (int)buffer[3]) << std::endl;
 
     return bytesRead;
 }
@@ -138,6 +138,17 @@ int EntSrvVS::sendMessage(SOCKET connectionWithClient, const std::string& messag
     int sentBytes = send(connectionWithClient, messageToSend.data(), bytesPerMessage, 0);
 
     if (sentBytes != bytesPerMessage)
+        return 1;
+    return 0;
+}
+
+int EntSrvVS::sendRecievedData(SOCKET connectionWithClient, char* message, int messageLength)
+{
+    this->send_int(connectionWithClient, messageLength);
+
+    int sentBytes = send(connectionWithClient, (const char*)message, messageLength, 0);
+
+    if (sentBytes != messageLength)
         return 1;
     return 0;
 }
