@@ -142,7 +142,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="entSrvVS.cpp" />
-    <ClCompile Include="MainServer.cpp" />
     <ClCompile Include="cfgParser.cpp" />
   </ItemGroup>
   <ItemGroup>
