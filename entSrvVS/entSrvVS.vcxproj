@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="entSrvVS.cpp" />
     <ClCompile Include="cfgParser.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cfgParser.h" />
